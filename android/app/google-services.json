@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "361502275044",
+    "project_id": "postfirebase-rsrs",
+    "storage_bucket": "postfirebase-rsrs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361502275044:android:f0e57ede7e031f7dc703f1",
+        "android_client_info": {
+          "package_name": "com.example.postfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361502275044-39r1aklc1tgk1i7co8lta28lbuiob2uu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADAb54mntaK-rvZoQ8k9dwcCltCLzCZQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361502275044-39r1aklc1tgk1i7co8lta28lbuiob2uu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
