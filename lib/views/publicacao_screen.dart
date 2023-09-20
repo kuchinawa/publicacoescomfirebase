@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:postfirebase/domain/entities/publicacao.dart';
+
+import '../models/publicacao.dart';
 
 class PublicacaoScreen extends StatelessWidget {
   final Publicacao publicacao;
@@ -28,21 +29,24 @@ class PublicacaoScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
             if (publicacao.imagemURL.isNotEmpty)
-              Image.network(
-                publicacao.imagemURL,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Image.network(
+                  publicacao.imagemURL,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
             SizedBox(height: 16),
             Text(
-              'Autor: ${publicacao.autor}', // Suponha que você tenha adicionado um campo "autor" na classe Publicacao
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              'Autor: ${publicacao.autor}',
+              style: TextStyle(fontSize: 14, color: Colors.blueAccent),
             ),
             SizedBox(height: 8),
             Text(
               'Data: ${publicacao.data.toString()}',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(fontSize: 14, color: Colors.blueAccent),
             ),
           ],
         ),

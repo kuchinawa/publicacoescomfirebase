@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget{
 
 class _LoginPageState extends State<LoginPage>{
   final _emailController = TextEditingController();
-  final _passwordfController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage>{
             ),
           ),
           TextFormField(
-            controller: _passwordfController,
+            controller: _passwordController,
             decoration: InputDecoration(
               labelText: ('senha'),
           ),obscureText: true,
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage>{
     try{
       UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
           email: _emailController.text,
-          password: _passwordfController.text,
+          password: _passwordController.text,
       );
       if(userCredential!=null){
         Navigator.pushReplacement(
@@ -88,4 +88,11 @@ class _LoginPageState extends State<LoginPage>{
       }
     }
   }
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
 }

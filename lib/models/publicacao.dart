@@ -4,7 +4,8 @@ class Publicacao {
   final String conteudo;
   final String imagemURL;
   final String autor;
-  final DateTime data;
+  final DateTime? data;
+  final String fotoPerfilURL;
 
   Publicacao({
     required this.id,
@@ -12,6 +13,7 @@ class Publicacao {
     required this.conteudo,
     required this.imagemURL,
     required this.autor,
-    required this.data,
+    this.data,
+    required this.fotoPerfilURL,
   });
 }

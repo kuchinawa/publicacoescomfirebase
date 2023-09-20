@@ -19,7 +19,6 @@ class _ChecagemPageState extends State<ChecagemPage> {
   @override
   void initState() {
     super.initState();
-    // Listen to authentication state changes
     streamSubscription = FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
         Navigator.pushReplacement(
@@ -41,7 +40,6 @@ class _ChecagemPageState extends State<ChecagemPage> {
 
   @override
   void dispose() {
-    // Cancel the stream subscription when the widget is disposed
     streamSubscription?.cancel();
     super.dispose();
   }

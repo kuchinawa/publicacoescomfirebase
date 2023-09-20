@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:postfirebase/service/PublicacaoService.dart';
-import 'package:postfirebase/view/Editar_Publicacao_Screen.dart';
-import 'package:postfirebase/view/adicionar_publicacao_screen.dart';
-import 'package:postfirebase/view/detalhes_publicacao_screen.dart';
+import 'package:postfirebase/checagem_page.dart';
+import 'package:postfirebase/services/PublicacaoService.dart';
+import 'package:postfirebase/views/adicionar_publicacao_screen.dart';
+import 'package:postfirebase/views/detalhes_publicacao_screen.dart';
+import 'package:postfirebase/views/editar_publicacao_Screen.dart';
+import 'models/publicacao.dart';
 
-import 'checagem_page.dart';
-import 'domain/entities/publicacao.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -18,14 +18,18 @@ class _HomePageState extends State<HomePage> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final PublicacaoService _publicacaoService = PublicacaoService();
 
-  late User _user; // O usuário logado
-  List<Publicacao> _publicacoes = []; // Lista de publicações
+  late User? _user;
+  List<Publicacao> _publicacoes = [];
 
   @override
   void initState() {
     super.initState();
-    _user = _firebaseAuth.currentUser!;
+    _carregarUsuario();
     _carregarPublicacoes();
+  }
+
+  Future<void> _carregarUsuario() async {
+    _user = _firebaseAuth.currentUser;
   }
 
   Future<void> _carregarPublicacoes() async {
@@ -35,33 +39,96 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _mostrarOpcoes(Publicacao publicacao) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: Icon(Icons.edit),
-                title: Text('Editar'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _editarPublicacao(publicacao);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('Excluir'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _excluirPublicacao(publicacao);
-                },
-              ),
-            ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Bem-vindo, ${_user?.displayName}'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await _firebaseAuth.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ChecagemPage()),
+              );
+            },
           ),
-        );
-      },
+        ],
+      ),
+      body: Container(
+        color: Colors.grey[300],
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0,
+          ),
+          itemCount: _publicacoes.length,
+          itemBuilder: (context, index) {
+            final publicacao = _publicacoes[index];
+            final isAuthor = publicacao.autor == _user?.displayName;
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DetalhesPublicacaoScreen(publicacao: publicacao),
+                  ),
+                );
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                        image: NetworkImage(publicacao.imagemURL),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  if (isAuthor)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              _editarPublicacao(publicacao);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              _excluirPublicacao(publicacao);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AdicionarPublicacaoScreen()),
+          ).then((_) {
+            _carregarPublicacoes();
+          });
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 
@@ -81,86 +148,5 @@ class _HomePageState extends State<HomePage> {
       _publicacoes.remove(publicacao);
     });
     await _publicacaoService.excluirPublicacao(publicacao.id);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bem-vindo, ${_user.displayName}'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await _firebaseAuth.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ChecagemPage()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        color: Colors.grey[300],
-        child: ListView.builder(
-          itemCount: _publicacoes.length,
-          itemBuilder: (context, index) {
-            final publicacao = _publicacoes[index];
-            return Card(
-              color: Colors.grey[800],
-              child: ListTile(
-                leading: publicacao.imagemURL.isNotEmpty
-                    ? Image.network(
-                  publicacao.imagemURL,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                )
-                    : SizedBox.shrink(),
-                title: Text(
-                  publicacao.titulo,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  'Autor: ${publicacao.autor}',
-                  style: TextStyle(
-                    color: Colors.white70,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          DetalhesPublicacaoScreen(publicacao: publicacao),
-                    ),
-                  );
-                },
-                onLongPress: () {
-                  if (publicacao.autor == _user.displayName) {
-                    _mostrarOpcoes(publicacao);
-                  }
-                },
-              ),
-            );
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AdicionarPublicacaoScreen()),
-          ).then((_) {
-            _carregarPublicacoes();
-          });
-        },
-        child: Icon(Icons.add),
-      ),
-    );
   }
 }

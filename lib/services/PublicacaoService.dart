@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:postfirebase/domain/entities/publicacao.dart';
+
+import '../models/publicacao.dart';
 
 class PublicacaoService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final userPhotoURL = FirebaseAuth.instance.currentUser?.photoURL;
 
   Future<void> criarPublicacao(Publicacao publicacao) async {
     await _firestore.collection('publicacoes').add({
@@ -13,6 +15,7 @@ class PublicacaoService {
       'imagemURL': publicacao.imagemURL,
       'autor': publicacao.autor,
       'data': publicacao.data,
+      'fotoPerfilURL': userPhotoURL,
     });
   }
 
@@ -27,7 +30,7 @@ class PublicacaoService {
         conteudo: data['conteudo'],
         imagemURL: data['imagemURL'],
         autor: data['autor'],
-        data: (data['data'] as Timestamp).toDate(),
+        data: (data['data'] as Timestamp).toDate(), fotoPerfilURL: data['fotoPerfilURL'] ?? '',
       );
     }).toList();
   }

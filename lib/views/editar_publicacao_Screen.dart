@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:postfirebase/domain/entities/publicacao.dart';
-import 'package:postfirebase/service/PublicacaoService.dart';
+import '../models/publicacao.dart';
+import '../services/PublicacaoService.dart';
 
 class EditarPublicacaoScreen extends StatefulWidget {
   final Publicacao publicacao;
@@ -36,12 +36,12 @@ class _EditarPublicacaoScreenState extends State<EditarPublicacaoScreen> {
         conteudo: conteudo,
         imagemURL: imagemURL,
         autor: widget.publicacao.autor,
-        data: widget.publicacao.data,
+        data: widget.publicacao.data, fotoPerfilURL: '',
       );
 
       await PublicacaoService().atualizarPublicacao(publicacaoAtualizada);
 
-      Navigator.pop(context, true); // Retorna para a tela anterior com sucesso
+      Navigator.pop(context, true);
     }
   }
 
